@@ -10,7 +10,7 @@ type MemberInfo struct {
 
 func readMembers(reader *ClassReader, cp ConstantPool) []*MemberInfo {
 	memberCount := reader.readUint16()
-	members := make([]MemberInfo, memberCount)
+	members := make([]*MemberInfo, memberCount)
 	for i := range members {
 		members[i] = readMember(reader, cp)
 	}
