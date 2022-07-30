@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"jvmgo/ch04/classfile"
-	"jvmgo/ch04/classpath"
-	"strings"
+	"jvmgo/ch04/rtda"
 )
 
 func main() {
@@ -19,50 +17,41 @@ func main() {
 }
 
 func startJVM(cmd *Cmd) {
-	cp := classpath.Parse(cmd.xJreOption, cmd.cpOption)
-	fmt.Printf("classpath:%v class:%v args:%v\n", cp, cmd.class, cmd.args)
-	className := strings.Replace(cmd.class, ".", "/", -1)
-	cf := loadClass(className, cp)
-	fmt.Println(cmd.class)
-	printClassInfo(cf)
-	//classData, _, err := cp.ReadClass(className)
-	//if err != nil {
-	//	fmt.Printf("cloud not find or load main class %s\n", cmd.class)
-	//	return
-	//}
-	//fmt.Printf("class data:%v\n", classData)
-	//fmt.Printf("classpath:%s calss:%s args:%v\n", cmd.cpOption, cmd.class, cmd.args)
+	frame := rtda.NewFrame(100, 100)
+	testLocalVars(frame.LocalVars())
+	testOperandStack(frame.OperandStack())
 }
 
-func printClassInfo(cf *classfile.ClassFile) {
-	fmt.Printf("version: %v.%v\n", cf.MajorVersion(), cf.MinorVersion())
-	fmt.Printf("constants count: %v\n", len(cf.ConstantPool()))
-	fmt.Printf("access flags: 0x%x\n", cf.AccessFlags())
-	fmt.Printf("this class: %v\n", cf.ClassName())
-	fmt.Printf("super class: %v\n", cf.SuperClassName())
-	fmt.Printf("interfaces: %v\n", cf.InterfaceName())
-	fmt.Printf("field count: %v\n", len(cf.Fileds()))
-	for _, f := range cf.Fileds() {
-		fmt.Printf("%s\n", f.Name())
-	}
-	fmt.Printf("method count: %v\n", len(cf.Methods()))
-	for _, m := range cf.Methods() {
-		fmt.Printf("%s\n", m.Name())
-	}
+func testOperandStack(stack *rtda.OperandStack) {
+	stack.PushInt(100)
+	stack.PushInt(-100)
+	stack.PushLong(2997924580)
+	stack.PushLong(-2997924580)
+	stack.PushFloat(3.1415926)
+	stack.PushDouble(2.71828182845)
+	stack.PushRef(nil)
+	println(stack.PopRef())
+	println(stack.PopDouble())
+	println(stack.PopFloat())
+	println(stack.PopLong())
+	println(stack.PopLong())
+	println(stack.PopInt())
+	println(stack.PopInt())
 }
 
-func loadClass(className string, cp *classpath.ClassPath) *classfile.ClassFile {
-	classData, _, err := cp.ReadClass(className)
-	if err != nil {
-		panic(err)
-	}
-	cf, err := classfile.Parse(classData)
-	if err != nil {
-		panic(err)
-	}
-	return cf
+func testLocalVars(vars rtda.LocalVars) {
+	vars.SetInt(0, 100)
+	vars.SetInt(1, -100)
+	vars.SetLong(2, 2997924580)
+	vars.SetLong(4, -2997924580)
+	vars.SetFloat(6, 3.1415926)
+	vars.SetDouble(7, 2.71828182845)
+	vars.SetRef(9, nil)
+	println(vars.GetInt(0))
+	println(vars.GetInt(1))
+	println(vars.GetLong(2))
+	println(vars.GetLong(4))
+	println(vars.GetFloat(6))
+	println(vars.GetDouble(7))
+	println(vars.GetRef(9))
 }
-
-//func startJVM(options *cmdline.Option, class string,args []string) {
-//
-//}
