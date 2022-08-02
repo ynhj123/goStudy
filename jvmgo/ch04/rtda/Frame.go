@@ -6,11 +6,11 @@ type Frame struct {
 	operandStack *OperandStack
 }
 
-func (self Frame) LocalVars() LocalVars {
+func (self *Frame) LocalVars() LocalVars {
 	return self.localVars
 }
 
-func (self Frame) OperandStack() *OperandStack {
+func (self *Frame) OperandStack() *OperandStack {
 	return self.operandStack
 }
 

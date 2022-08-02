@@ -74,7 +74,7 @@ type LUSHR struct {
 	base.NoOperandsInstruction
 }
 
-func (self *IUSHR) LUSHR(frame *rtda.Frame) {
+func (self *LUSHR) Execute(frame *rtda.Frame) {
 	stack := frame.OperandStack()
 	v2 := stack.PopInt()
 	v1 := stack.PopInt()

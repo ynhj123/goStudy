@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"jvmgo/ch05/rtda"
+	"jvmgo/ch05/classfile"
+	"jvmgo/ch05/classpath"
+	"strings"
 )
 
 func main() {
@@ -17,41 +19,35 @@ func main() {
 }
 
 func startJVM(cmd *Cmd) {
-	frame := rtda.NewFrame(100, 100)
-	testLocalVars(frame.LocalVars())
-	testOperandStack(frame.OperandStack())
+	cp := classpath.Parse(cmd.xJreOption, cmd.cpOption)
+	fmt.Printf("classpath:%v class:%v args:%v\n", cp, cmd.class, cmd.args)
+	className := strings.Replace(cmd.class, ".", "/", -1)
+	cf := loadClass(className, cp)
+	mainMethod := getMainMethod(cf)
+	if mainMethod != nil {
+		interpret(mainMethod)
+	} else {
+		fmt.Printf("Main method not found in class%s\n", cmd.class)
+	}
 }
 
-func testOperandStack(stack *rtda.OperandStack) {
-	stack.PushInt(100)
-	stack.PushInt(-100)
-	stack.PushLong(2997924580)
-	stack.PushLong(-2997924580)
-	stack.PushFloat(3.1415926)
-	stack.PushDouble(2.71828182845)
-	stack.PushRef(nil)
-	println(stack.PopRef())
-	println(stack.PopDouble())
-	println(stack.PopFloat())
-	println(stack.PopLong())
-	println(stack.PopLong())
-	println(stack.PopInt())
-	println(stack.PopInt())
+func getMainMethod(cf *classfile.ClassFile) *classfile.MemberInfo {
+	for _, m := range cf.Methods() {
+		if m.Name() == "main" && m.Descriptor() == "([Ljava/lang/String;)V" {
+			return m
+		}
+	}
+	return nil
 }
 
-func testLocalVars(vars rtda.LocalVars) {
-	vars.SetInt(0, 100)
-	vars.SetInt(1, -100)
-	vars.SetLong(2, 2997924580)
-	vars.SetLong(4, -2997924580)
-	vars.SetFloat(6, 3.1415926)
-	vars.SetDouble(7, 2.71828182845)
-	vars.SetRef(9, nil)
-	println(vars.GetInt(0))
-	println(vars.GetInt(1))
-	println(vars.GetLong(2))
-	println(vars.GetLong(4))
-	println(vars.GetFloat(6))
-	println(vars.GetDouble(7))
-	println(vars.GetRef(9))
+func loadClass(className string, cp *classpath.ClassPath) *classfile.ClassFile {
+	classData, _, err := cp.ReadClass(className)
+	if err != nil {
+		panic(err)
+	}
+	cf, err := classfile.Parse(classData)
+	if err != nil {
+		panic(err)
+	}
+	return cf
 }
