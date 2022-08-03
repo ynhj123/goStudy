@@ -5,6 +5,8 @@ import (
 	"jvmgo/ch06/classfile"
 )
 
+type Constant interface {
+}
 type ConstantPool struct {
 	class  *Class
 	consts []Constant
