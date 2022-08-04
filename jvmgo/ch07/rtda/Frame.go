@@ -34,6 +34,10 @@ func (self *Frame) Method() *heap.Method {
 	return self.method
 }
 
+func (self *Frame) RevertNextPc() {
+	self.nextPc = self.thread.pc
+}
+
 func NewFrame(thread *Thread, method *heap.Method) *Frame {
 	return &Frame{
 		thread:       thread,
