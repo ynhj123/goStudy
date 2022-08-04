@@ -1,6 +1,6 @@
 package heap
 
-import "jvmgo/ch06/classfile"
+import "jvmgo/ch07/classfile"
 
 type ClassMember struct {
 	accessFlags uint16
@@ -27,6 +27,10 @@ func (self *ClassMember) IsFinal() bool {
 func (self *ClassMember) IsSynthetic() bool {
 	return 0 != self.accessFlags&ACC_SYNTHETIC
 }
+
+func (self *Method) IsAbstract() bool {
+	return 0 != self.accessFlags&ACC_ABSTRACT
+}
 func (self *ClassMember) copyMemberInfo(memberInfo *classfile.MemberInfo) {
 	self.accessFlags = memberInfo.AccessFlags()
 	self.name = memberInfo.Name()
@@ -39,7 +43,7 @@ func (self *ClassMember) isAccessibleTo(d *Class) bool {
 	}
 	c := self.class
 	if self.IsProtected() {
-		return d == c || d.isSubClassOf(c) || c.GetPackageName() == d.GetPackageName()
+		return d == c || d.IsSubClassOf(c) || c.GetPackageName() == d.GetPackageName()
 	}
 	if !self.IsPrivate() {
 		return c.GetPackageName() == d.GetPackageName()
@@ -51,4 +55,7 @@ func (self *ClassMember) Class() *Class {
 }
 func (self *ClassMember) Name() string {
 	return self.name
+}
+func (self *ClassMember) Descriptor() string {
+	return self.descriptor
 }
