@@ -16,6 +16,7 @@ func newOperandStack(maxStack uint) *OperandStack {
 	}
 	return nil
 }
+
 func (self *OperandStack) PushInt(val int32) {
 	self.Slot[self.size].num = val
 	self.size++
@@ -74,4 +75,15 @@ func (self *OperandStack) PopSlot() Slot {
 
 func (self *OperandStack) GetRefFromTop(n uint) *heap.Object {
 	return self.Slot[self.size-1-n].ref
+}
+
+func (self *OperandStack) PushBoolean(val bool) {
+	if val {
+		self.PushInt(1)
+	} else {
+		self.PushInt(0)
+	}
+}
+func (self *OperandStack) PopBoolean() bool {
+	return self.PopInt() == 1
 }

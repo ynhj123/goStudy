@@ -3,6 +3,7 @@ package heap
 type Object struct {
 	class *Class
 	data  interface{}
+	extra interface{}
 }
 
 func (self *Object) Fields() Slots {
@@ -15,6 +16,9 @@ func (self *Object) IsInstanceOf(class *Class) bool {
 
 func (self *Object) Class() *Class {
 	return self.class
+}
+func (self *Object) Extra() interface{} {
+	return self.extra
 }
 
 func (self *Object) SetRefVar(name string, descriptor string, ref *Object) {
