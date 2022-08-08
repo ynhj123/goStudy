@@ -5,11 +5,27 @@ func (self *Class) IsAssignableFrom(other *Class) bool {
 	if s == t {
 		return true
 	}
-	if !t.IsINTERFACE() {
-		return s.IsSubClassOf(t)
+	if !s.IsArray() {
+		if !t.IsINTERFACE() {
+			return s.IsSubClassOf(t)
+		} else {
+			return s.IsImplements(t)
+		}
 	} else {
-		return s.IsImplements(t)
+		if !t.IsArray() {
+			if !t.IsINTERFACE() {
+				return t.isJlObject()
+			} else {
+				return t.isJlCloneable() || t.isJioSerializable()
+			}
+		} else {
+			sc := s.ComponentClass()
+			tc := t.ComponentClass()
+			return sc == tc || tc.IsAssignableFrom(sc)
+		}
 	}
+	return false
+
 }
 
 func (self *Class) IsAccessibleTo(other *Class) bool {
