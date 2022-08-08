@@ -4,10 +4,11 @@ import "jvmgo/ch10/classfile"
 
 type Method struct {
 	ClassMember
-	maxStack     uint
-	maxLocals    uint
-	code         []byte
-	argSlotCount uint
+	maxStack       uint
+	maxLocals      uint
+	code           []byte
+	argSlotCount   uint
+	exceptionTable ExceptionTable
 }
 
 func newMethods(class *Class, cfMethods []*classfile.MemberInfo) []*Method {
@@ -36,6 +37,7 @@ func (self *Method) copyAttributes(cfMethod *classfile.MemberInfo) {
 		self.maxStack = codeAttr.MaxStack()
 		self.maxLocals = codeAttr.MaxLocals()
 		self.code = codeAttr.Code()
+		self.exceptionTable = newExceptionTable(codeAttr.ExceptionTable(), self.class.constantPool)
 	}
 }
 
@@ -84,4 +86,11 @@ func (self *Method) injectCodeAttribute(returnType string) {
 	default:
 		self.code = []byte{0xfe, 0xac} // ireturn
 	}
+}
+func (self *Method) FindExceptionHandler(exClass *Class, pc int) int {
+	handler := self.exceptionTable.findExceptionHandler(exClass, pc)
+	if handler != nil {
+		return handler.handlerPc
+	}
+	return -1
 }
