@@ -4,6 +4,7 @@ import (
 	"jvmgo/ch09/instructions/base"
 	"jvmgo/ch09/native"
 	_ "jvmgo/ch09/native/java/lang"
+	_ "jvmgo/ch09/native/sun/misc"
 	"jvmgo/ch09/rtda"
 )
 
