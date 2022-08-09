@@ -33,6 +33,10 @@ func (self *Object) GetRefVar(name string, descriptor string) *Object {
 	return slots.GetRef(field.slotId)
 }
 
+func (self *Object) SetExtra(extra interface{}) {
+	self.extra = extra
+}
+
 func newObject(class *Class) *Object {
 	return &Object{
 		class: class,

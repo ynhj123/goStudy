@@ -6,44 +6,44 @@ import (
 )
 
 type OperandStack struct {
-	size uint
-	Slot []Slot
+	size  uint
+	slots []Slot
 }
 
 func newOperandStack(maxStack uint) *OperandStack {
 	if maxStack > 0 {
-		return &OperandStack{Slot: make([]Slot, maxStack)}
+		return &OperandStack{slots: make([]Slot, maxStack)}
 	}
 	return nil
 }
 
 func (self *OperandStack) PushInt(val int32) {
-	self.Slot[self.size].num = val
+	self.slots[self.size].num = val
 	self.size++
 }
 func (self *OperandStack) PopInt() int32 {
 	self.size--
-	return self.Slot[self.size].num
+	return self.slots[self.size].num
 }
 func (self *OperandStack) PushFloat(val float32) {
 	bits := math.Float32bits(val)
-	self.Slot[self.size].num = int32(bits)
+	self.slots[self.size].num = int32(bits)
 	self.size++
 }
 func (self *OperandStack) PopFloat() float32 {
 	self.size--
-	bits := uint32(self.Slot[self.size].num)
+	bits := uint32(self.slots[self.size].num)
 	return math.Float32frombits(bits)
 }
 func (self *OperandStack) PushLong(val int64) {
-	self.Slot[self.size].num = int32(val)
-	self.Slot[self.size+1].num = int32(val >> 32)
+	self.slots[self.size].num = int32(val)
+	self.slots[self.size+1].num = int32(val >> 32)
 	self.size += 2
 }
 func (self *OperandStack) PopLong() int64 {
 	self.size -= 2
-	low := uint32(self.Slot[self.size].num)
-	hign := uint32(self.Slot[self.size+1].num)
+	low := uint32(self.slots[self.size].num)
+	hign := uint32(self.slots[self.size+1].num)
 	return int64(hign)<<32 | int64(low)
 }
 func (self *OperandStack) PushDouble(val float64) {
@@ -55,26 +55,26 @@ func (self *OperandStack) PopDouble() float64 {
 	return math.Float64frombits(bits)
 }
 func (self *OperandStack) PushRef(ref *heap.Object) {
-	self.Slot[self.size].ref = ref
+	self.slots[self.size].ref = ref
 	self.size++
 }
 func (self *OperandStack) PopRef() *heap.Object {
 	self.size--
-	return self.Slot[self.size].ref
+	return self.slots[self.size].ref
 }
 
 func (self *OperandStack) PushSlot(slot Slot) {
-	self.Slot[self.size] = slot
+	self.slots[self.size] = slot
 	self.size++
 }
 func (self *OperandStack) PopSlot() Slot {
 	self.size--
-	return self.Slot[self.size]
+	return self.slots[self.size]
 
 }
 
 func (self *OperandStack) GetRefFromTop(n uint) *heap.Object {
-	return self.Slot[self.size-1-n].ref
+	return self.slots[self.size-1-n].ref
 }
 
 func (self *OperandStack) PushBoolean(val bool) {
@@ -86,4 +86,11 @@ func (self *OperandStack) PushBoolean(val bool) {
 }
 func (self *OperandStack) PopBoolean() bool {
 	return self.PopInt() == 1
+}
+
+func (self *OperandStack) Clear() {
+	self.size = 0
+	for i := range self.slots {
+		self.slots[i].ref = nil
+	}
 }

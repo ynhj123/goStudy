@@ -21,6 +21,7 @@ type Class struct {
 	staticVars        Slots
 	initStarted       bool
 	jClass            *Object
+	sourceFile        string
 }
 
 func newClass(cf *classfile.ClassFile) *Class {
@@ -32,8 +33,10 @@ func newClass(cf *classfile.ClassFile) *Class {
 	class.constantPool = newConstantPool(class, cf.ConstantPool())
 	class.fields = newFields(class, cf.Fileds())
 	class.methods = newMethods(class, cf.Methods())
+	class.sourceFile = getSourceFile(cf)
 	return class
 }
+
 func (self *Class) IsPublic() bool {
 	return 0 != self.accessFlags&ACC_PUBLIC
 }
@@ -212,4 +215,14 @@ func (self *Class) SetRefVar(fieldName, fieldDescriptor string, ref *Object) {
 }
 func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
 	return self.getMethod(name, descriptor, false)
+}
+
+func (self *Class) SourceFile() string {
+	return self.sourceFile
+}
+func getSourceFile(cf *classfile.ClassFile) string {
+	if sfAttr := cf.SourceFileAttribute(); sfAttr != nil {
+		return sfAttr.FileName()
+	}
+	return "Unknown"
 }
