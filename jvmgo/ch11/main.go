@@ -14,7 +14,7 @@ func main() {
 	} else if cmd.helpFlag || cmd.class == "" {
 		printUsage()
 	} else {
-		startJVM(cmd)
+		newJVM(cmd).start()
 	}
 }
 

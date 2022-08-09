@@ -8,14 +8,7 @@ import (
 	"jvmgo/ch11/rtda/heap"
 )
 
-func interpret(method *heap.Method, logInst bool, args []string) {
-	thread := rtda.NewThread()
-	frame := thread.NewFrame(method)
-	thread.PushFrame(frame)
-
-	jArgs := createArgsArray(method.Class().Loader(), args)
-	frame.LocalVars().SetRef(0, jArgs)
-
+func interpret(thread *rtda.Thread, logInst bool) {
 	defer catchErr(thread)
 	loop(thread, logInst)
 }

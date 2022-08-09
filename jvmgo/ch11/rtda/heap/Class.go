@@ -220,6 +220,10 @@ func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
 func (self *Class) SourceFile() string {
 	return self.sourceFile
 }
+
+func (self *Class) GetStaticMethod(name, descriptor string) *Method {
+	return self.getMethod(name, descriptor, true)
+}
 func getSourceFile(cf *classfile.ClassFile) string {
 	if sfAttr := cf.SourceFileAttribute(); sfAttr != nil {
 		return sfAttr.FileName()
