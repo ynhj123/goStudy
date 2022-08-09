@@ -26,7 +26,7 @@ func arraycopy(frame *rtda.Frame) {
 	if srcPos < 0 || destPos < 0 || length < 0 || srcPos+length > dest.ArrayLength() || destPos+length > dest.ArrayLength() {
 		panic("java.lang.IndexOutBoundsException")
 	}
-	heap.ArrayCopy(src, dest, srcPos, destPos)
+	heap.ArrayCopy(src, dest, srcPos, destPos, length)
 }
 
 func checkArrayCopy(src *heap.Object, dest *heap.Object) bool {
