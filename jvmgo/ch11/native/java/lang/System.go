@@ -40,3 +40,9 @@ func checkArrayCopy(src *heap.Object, dest *heap.Object) bool {
 	}
 	return true
 }
+func setOut(frame *rtda.Frame) {
+	out := frame.LocalVars().GetRef(0)
+	sysClass := frame.Method().Class()
+	sysClass.SetRefVar("out", "Ljava/io/printStream;", out)
+
+}
